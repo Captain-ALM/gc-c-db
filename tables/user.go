@@ -3,8 +3,8 @@ package tables
 import "xorm.io/xorm"
 
 type User struct {
-	Email string `xorm:"char(255) unique pk not null 'User_Email'"`
-	Token string `xorm:"char(255) unique index 'User_Token'"`
+	Email     string `xorm:"char(256) unique pk not null 'User_Email'"`
+	TokenHash []byte `xorm:"binary(64) unique index 'User_Token'"`
 }
 
 func (User) GetConstraints() []Constraint {
