@@ -80,8 +80,8 @@ func (m *Manager) DropTable(t tables.Table, dropChildren bool) error {
 			if err == nil {
 				err = m.Engine.DropTables(t)
 			}
-		} else {
-			err = errors.New("table " + t.TableName() + " does not exist")
+			/*} else {
+			err = errors.New("table " + t.TableName() + " does not exist")*/
 		}
 	}
 	return err
