@@ -3,7 +3,7 @@ package tables
 import "xorm.io/xorm"
 
 type User struct {
-	Email     string `xorm:"char(256) unique pk not null 'User_Email'"`
+	Email     string `xorm:"char(255) unique pk not null 'User_Email'"`
 	TokenHash []byte `xorm:"binary(64) unique index 'User_Token'"`
 }
 

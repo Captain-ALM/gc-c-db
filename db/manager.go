@@ -2,6 +2,8 @@ package db
 
 import (
 	"errors"
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/mattn/go-sqlite3"
 	"golang.local/gc-c-db/tables"
 	"strings"
 	"xorm.io/xorm"
@@ -120,6 +122,15 @@ func (m *Manager) ClearTable(t tables.Table, clearChildren bool) error {
 			err = errors.New("table " + t.TableName() + " does not exist")
 		}
 	}
+	return err
+}
+
+func (m *Manager) ClearAllTables() error {
+	err := m.ClearTable(&tables.User{}, true)
+	if err != nil {
+		return err
+	}
+	err = m.ClearTable(&tables.Server{}, false)
 	return err
 }
 
