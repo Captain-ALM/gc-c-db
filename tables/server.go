@@ -23,6 +23,14 @@ func (Server) GetChildTables() []Table {
 	return []Table{&Game{}}
 }
 
+func (s Server) GetIDObject() Table {
+	return &Server{ID: s.ID}
+}
+
+func (Server) GetNullableColumns() []string {
+	return nil
+}
+
 func (s Server) GetChildrenGames(e *xorm.Engine) ([]Game, error) {
 	var children []Game
 	err := e.Where("Server_ID = ?", s.ID).Find(&children)

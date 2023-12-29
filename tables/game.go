@@ -38,6 +38,14 @@ func (Game) GetChildTables() []Table {
 	return []Table{&Guest{}}
 }
 
+func (g Game) GetIDObject() Table {
+	return &Game{ID: g.ID}
+}
+
+func (Game) GetNullableColumns() []string {
+	return nil
+}
+
 func (g Game) GetParentQuiz(e *xorm.Engine) (Quiz, error) {
 	parent := Quiz{ID: g.QuizID}
 	has, err := e.Get(&parent)

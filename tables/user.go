@@ -19,6 +19,14 @@ func (User) TableName() string {
 	return "User"
 }
 
+func (u User) GetIDObject() Table {
+	return &User{Email: u.Email}
+}
+
+func (User) GetNullableColumns() []string {
+	return []string{"User_Token"}
+}
+
 func (u User) GetChildrenQuizzes(e *xorm.Engine) ([]Quiz, error) {
 	var children []Quiz
 	err := e.Where("Owner_Email = ?", u.Email).Find(&children)

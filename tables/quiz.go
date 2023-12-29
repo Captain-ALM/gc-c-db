@@ -32,6 +32,14 @@ func (Quiz) GetChildTables() []Table {
 	return []Table{&Game{}}
 }
 
+func (q Quiz) GetIDObject() Table {
+	return &Quiz{ID: q.ID}
+}
+
+func (Quiz) GetNullableColumns() []string {
+	return nil
+}
+
 func (q Quiz) GetParentUser(e *xorm.Engine) (User, error) {
 	parent := User{Email: q.OwnerEmail}
 	has, err := e.Get(&parent)

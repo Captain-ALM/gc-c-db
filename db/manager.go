@@ -14,6 +14,8 @@ type Manager struct {
 	Path   string
 }
 
+const ManagerEngineNil = "manager engine is nil"
+
 func (m *Manager) Connect() error {
 	var err error
 	if strings.HasPrefix(m.Path, "mysql:") {
@@ -41,7 +43,7 @@ func (m *Manager) AssureAllTables() error {
 
 func (m *Manager) AssureTable(t tables.Table, assureChildren bool) error {
 	if m.Engine == nil {
-		return errors.New("manager engine is nil")
+		return errors.New(ManagerEngineNil)
 	}
 	exists, err := m.Engine.IsTableExist(t)
 	if err == nil {
@@ -63,7 +65,7 @@ func (m *Manager) AssureTable(t tables.Table, assureChildren bool) error {
 
 func (m *Manager) DropTable(t tables.Table, dropChildren bool) error {
 	if m.Engine == nil {
-		return errors.New("manager engine is nil")
+		return errors.New(ManagerEngineNil)
 	}
 	exists, err := m.Engine.IsTableExist(t)
 	if err == nil {
@@ -98,7 +100,7 @@ func (m *Manager) DropAllTables() error {
 
 func (m *Manager) ClearTable(t tables.Table, clearChildren bool) error {
 	if m.Engine == nil {
-		return errors.New("manager engine is nil")
+		return errors.New(ManagerEngineNil)
 	}
 	exists, err := m.Engine.IsTableExist(t)
 	if err == nil {
@@ -152,4 +154,40 @@ func (m *Manager) dropConstraints(t tables.Table) error {
 		}
 	}
 	return nil
+}
+
+const TableRecordNonExistent = "table record does not exist"
+
+func (m *Manager) Load(t tables.Table) error {
+	if m.Engine == nil {
+		return errors.New(ManagerEngineNil)
+	}
+	exists, err := m.Engine.Get(t)
+	if err != nil {
+		return err
+	} else if !exists {
+		return errors.New(TableRecordNonExistent)
+	}
+	return nil
+}
+
+func (m *Manager) Save(t tables.Table) error {
+	if m.Engine == nil {
+		return errors.New(ManagerEngineNil)
+	}
+	idObj := t.GetIDObject()
+	exists, err := m.Engine.Exist(idObj)
+	if err != nil {
+		return err
+	}
+	dbSession := m.Engine.AllCols()
+	if len(t.GetNullableColumns()) > 0 {
+		dbSession = dbSession.Nullable(t.GetNullableColumns()...)
+	}
+	if exists {
+		_, err := dbSession.Update(t, idObj)
+		return err
+	}
+	_, err = dbSession.Insert(t)
+	return err
 }
