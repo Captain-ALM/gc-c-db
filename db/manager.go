@@ -191,3 +191,23 @@ func (m *Manager) Save(t tables.Table) error {
 	_, err = dbSession.Insert(t)
 	return err
 }
+
+func (m *Manager) Insert(t tables.Table) error {
+	if m.Engine == nil {
+		return errors.New(ManagerEngineNil)
+	}
+	dbSession := m.Engine.AllCols()
+	if len(t.GetNullableColumns()) > 0 {
+		dbSession = dbSession.Nullable(t.GetNullableColumns()...)
+	}
+	_, err := dbSession.Insert(t)
+	return err
+}
+
+func (m *Manager) Delete(t tables.Table) error {
+	if m.Engine == nil {
+		return errors.New(ManagerEngineNil)
+	}
+	_, err := m.Engine.Delete(t)
+	return err
+}
