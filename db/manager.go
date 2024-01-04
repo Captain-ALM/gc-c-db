@@ -162,7 +162,11 @@ func (m *Manager) Load(t tables.Table) error {
 	if m.Engine == nil {
 		return errors.New(ManagerEngineNil)
 	}
-	exists, err := m.Engine.Get(t)
+	dbSession := m.Engine.UseBool().AllCols()
+	if len(t.GetNullableColumns()) > 0 {
+		dbSession = dbSession.Nullable(t.GetNullableColumns()...)
+	}
+	exists, err := dbSession.Get(t)
 	if err != nil {
 		return err
 	} else if !exists {
@@ -180,7 +184,7 @@ func (m *Manager) Save(t tables.Table) error {
 	if err != nil {
 		return err
 	}
-	dbSession := m.Engine.AllCols()
+	dbSession := m.Engine.UseBool().AllCols()
 	if len(t.GetNullableColumns()) > 0 {
 		dbSession = dbSession.Nullable(t.GetNullableColumns()...)
 	}
@@ -196,7 +200,7 @@ func (m *Manager) Insert(t tables.Table) error {
 	if m.Engine == nil {
 		return errors.New(ManagerEngineNil)
 	}
-	dbSession := m.Engine.AllCols()
+	dbSession := m.Engine.UseBool().AllCols()
 	if len(t.GetNullableColumns()) > 0 {
 		dbSession = dbSession.Nullable(t.GetNullableColumns()...)
 	}
