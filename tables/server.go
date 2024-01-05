@@ -6,7 +6,7 @@ import (
 )
 
 type Server struct {
-	ID            uint32    `xorm:"integer(10) unique pk not null autoincr 'Server_ID'"`
+	ID            uint32    `xorm:"int unique pk not null autoincr 'Server_ID'"`
 	Address       string    `xorm:"varchar(1020) unique not null 'Server_Address'"`
 	LastCheckTime time.Time `xorm:"timestamp not null"`
 }
