@@ -26,6 +26,7 @@ func (m *Manager) Connect() error {
 		err = errors.New("only sqlite and mysql are supported")
 	}
 	if err != nil {
+		DebugPrintln("Connect Failure For: " + m.Path)
 		m.Engine = nil
 		return err
 	}
@@ -38,6 +39,9 @@ func (m *Manager) AssureAllTables() error {
 		return err
 	}
 	err = m.AssureTable(&tables.User{}, true)
+	if err != nil {
+		DebugPrintln("Tables Assured")
+	}
 	return err
 }
 
@@ -59,6 +63,9 @@ func (m *Manager) AssureTable(t tables.Table, assureChildren bool) error {
 				}
 			}
 		}
+	}
+	if err != nil {
+		DebugPrintln("Table Assured: " + t.TableName())
 	}
 	return err
 }
@@ -84,6 +91,11 @@ func (m *Manager) DropTable(t tables.Table, dropChildren bool) error {
 			}
 			/*} else {
 			err = errors.New("table " + t.TableName() + " does not exist")*/
+		} else {
+			DebugPrintln("Drop ~ Table Non Existent: " + t.TableName())
+		}
+		if err != nil {
+			DebugPrintln("Table Dropped: " + t.TableName())
 		}
 	}
 	return err
@@ -95,6 +107,9 @@ func (m *Manager) DropAllTables() error {
 		return err
 	}
 	err = m.DropTable(&tables.Server{}, false)
+	if err != nil {
+		DebugPrintln("Tables Dropped")
+	}
 	return err
 }
 
@@ -122,7 +137,11 @@ func (m *Manager) ClearTable(t tables.Table, clearChildren bool) error {
 			}
 		} else {
 			err = errors.New("table " + t.TableName() + " does not exist")
+			DebugPrintln("Clear ~ Table Non Existent: " + t.TableName())
 		}
+	}
+	if err != nil {
+		DebugPrintln("Table Cleared: " + t.TableName())
 	}
 	return err
 }
@@ -133,6 +152,9 @@ func (m *Manager) ClearAllTables() error {
 		return err
 	}
 	err = m.ClearTable(&tables.Server{}, false)
+	if err != nil {
+		DebugPrintln("Tables Cleared")
+	}
 	return err
 }
 
@@ -143,6 +165,7 @@ func (m *Manager) addConstraints(t tables.Table) error {
 			return err
 		}
 	}
+	DebugPrintln("Table Constrained: " + t.TableName())
 	return nil
 }
 
@@ -153,6 +176,7 @@ func (m *Manager) dropConstraints(t tables.Table) error {
 			return err
 		}
 	}
+	DebugPrintln("Table Unconstrained: " + t.TableName())
 	return nil
 }
 
@@ -170,8 +194,10 @@ func (m *Manager) Load(t tables.Table) error {
 	if err != nil {
 		return err
 	} else if !exists {
+		DebugPrintln("Load Entry Non Existent: " + t.TableName())
 		return errors.New(TableRecordNonExistent)
 	}
+	DebugPrintln("Load Entry Exists: " + t.TableName())
 	return nil
 }
 
@@ -189,8 +215,11 @@ func (m *Manager) Save(t tables.Table) error {
 		dbSession = dbSession.Nullable(t.GetNullableColumns()...)
 	}
 	if exists {
+		DebugPrintln("Save Entry Exists: " + t.TableName())
 		_, err := dbSession.Update(t, idObj)
 		return err
+	} else {
+		DebugPrintln("Save Entry Non Existent: " + t.TableName())
 	}
 	_, err = dbSession.Insert(t)
 	return err
@@ -204,6 +233,7 @@ func (m *Manager) Insert(t tables.Table) error {
 	if len(t.GetNullableColumns()) > 0 {
 		dbSession = dbSession.Nullable(t.GetNullableColumns()...)
 	}
+	DebugPrintln("Insert Entry: " + t.TableName())
 	_, err := dbSession.Insert(t)
 	return err
 }
@@ -212,6 +242,7 @@ func (m *Manager) Delete(t tables.Table) error {
 	if m.Engine == nil {
 		return errors.New(ManagerEngineNil)
 	}
+	DebugPrintln("Delete Entry: " + t.TableName())
 	_, err := m.Engine.Delete(t)
 	return err
 }
