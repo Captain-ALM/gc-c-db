@@ -23,6 +23,10 @@ func (Server) GetChildTables() []Table {
 	return []Table{&Game{}}
 }
 
+func (s Server) GetID() interface{} {
+	return s.ID
+}
+
 func (s Server) GetIDObject() Table {
 	return &Server{ID: s.ID}
 }

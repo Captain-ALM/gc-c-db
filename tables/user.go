@@ -19,6 +19,10 @@ func (User) TableName() string {
 	return "User"
 }
 
+func (u User) GetID() interface{} {
+	return u.Email
+}
+
 func (u User) GetIDObject() Table {
 	return &User{Email: u.Email}
 }

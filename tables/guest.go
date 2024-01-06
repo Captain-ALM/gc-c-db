@@ -29,6 +29,10 @@ func (Guest) GetChildTables() []Table {
 	return nil
 }
 
+func (g Guest) GetID() interface{} {
+	return g.ID
+}
+
 func (g Guest) GetIDObject() Table {
 	return &Guest{ID: g.ID}
 }

@@ -186,7 +186,8 @@ func (m *Manager) Load(t tables.Table) error {
 	if m.Engine == nil {
 		return errors.New(ManagerEngineNil)
 	}
-	dbSession := m.Engine.UseBool().AllCols()
+	dbSession := m.Engine.NewSession()
+	defer func() { _ = dbSession.Close() }()
 	if len(t.GetNullableColumns()) > 0 {
 		dbSession = dbSession.Nullable(t.GetNullableColumns()...)
 	}
@@ -210,13 +211,13 @@ func (m *Manager) Save(t tables.Table) error {
 	if err != nil {
 		return err
 	}
-	dbSession := m.Engine.UseBool().AllCols()
+	dbSession := m.Engine.AllCols()
 	if len(t.GetNullableColumns()) > 0 {
 		dbSession = dbSession.Nullable(t.GetNullableColumns()...)
 	}
 	if exists {
 		DebugPrintln("Save Entry Exists: " + t.TableName())
-		_, err := dbSession.Update(t, idObj)
+		_, err := dbSession.ID(t.GetID()).Update(t)
 		return err
 	} else {
 		DebugPrintln("Save Entry Non Existent: " + t.TableName())
@@ -229,7 +230,7 @@ func (m *Manager) Insert(t tables.Table) error {
 	if m.Engine == nil {
 		return errors.New(ManagerEngineNil)
 	}
-	dbSession := m.Engine.UseBool().AllCols()
+	dbSession := m.Engine.AllCols()
 	if len(t.GetNullableColumns()) > 0 {
 		dbSession = dbSession.Nullable(t.GetNullableColumns()...)
 	}

@@ -32,6 +32,10 @@ func (Quiz) GetChildTables() []Table {
 	return []Table{&Game{}}
 }
 
+func (q Quiz) GetID() interface{} {
+	return q.ID
+}
+
 func (q Quiz) GetIDObject() Table {
 	return &Quiz{ID: q.ID}
 }
